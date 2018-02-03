@@ -20,7 +20,7 @@
 #include <Servo.h>
 
 #define microsecondsToCentimeters(microseconds) (unsigned long)microseconds / 29.1 / 2.0
-#define MIN_ACTION_DIST 20 // 20 cm
+#define MIN_ACTION_DIST 13 // 13 cm
 
 // Change these defines if you use differnt pins
 #define TRIGGER_PIN 3  // Digital pin 3.
@@ -61,6 +61,7 @@ void setup ( )
 
 void loop ( )
 {
+   static int direction_changed = 1;
    unsigned long dist_fwd;
 
    // Get a reading from the sonar sensor
@@ -69,9 +70,10 @@ void loop ( )
    //Serial.println (dist_fwd);
 
    // Go forward while nothing is in the distance sensors read area
-   if (dist_fwd > MIN_ACTION_DIST || dist_fwd == 0)
+   if (dist_fwd > MIN_ACTION_DIST || dist_fwd == 0 && direction_changed)
    {
       go_forward ( );
+      direction_changed = 0;
    }
    else // There is something in the sensors read area
    {
@@ -97,7 +99,8 @@ void loop ( )
          delay (TURNDELAY);
          halt ();
       }
-      
+
+      direction_changed = 1; // Make the bot go forward again.
       delay (TURNDELAY);
    }
 }
